@@ -1,8 +1,21 @@
+<h3>Add a Book</h3>
+<form id="addbook" action="/books" method="post">
+    Title: <input type="text" name="title" placeholder="Good Omens" required>
+    Author(s): <input type="text" name="authors" placeholder="Neil Gaiman,Terry Pratchett" required>
+    Number of Pages: <input type="number" name="pages" placeholder="491">
+    Year of Publication: <input type="number" name="year" placeholder="2006">
+    Genre(s): <input type="text" name="genres" placeholder="Fantasy,Humor">
+    URL of Book Cover: <input type="url" name="url" placeholder="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1392528568l/12067.jpg" required>
+    <input type="submit" value="Submit">
+ </form>
+ <p>*Separate authors and genres by comma</p>
+<br/>
+
 <h3>Books</h3>
 <table class="table">
     <thead>
         <th>Book Cover</th>
-        <th>ID</th>
+        <th>Book ID</th>
         <th>Book Title</th>
         <th>Number of Pages</th>
         <th>Year of Publication</th>

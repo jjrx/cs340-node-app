@@ -1,8 +1,10 @@
 <h1>Book Info</h1>
 <img src="{{book.bookCover}}" class="book-cover-pic" />
 <ul>
-	<li>ID: {{book.bookID}}</li>
+	<li>Book ID: {{book.bookID}}</li>
 	<li>Title: {{book.bookTitle}}</li>
+	<li>Author(s): {{book.authors}}</li>
+	<li>Genre(s): {{book.genres}}</li>
 	<li>Number of Pages: {{book.numPages}}</li>
 	<li>Year of Publication: {{book.publishedYear}}</li>
 </ul>
@@ -18,7 +20,7 @@
     </thead>
     <tbody>
         {{#each reviews}}
-        <tr> 
+        <tr>
             <td>{{ratingID}}</td>
             <td>{{username}}</td>
             <td>{{rateDate}}</td>
