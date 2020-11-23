@@ -1,0 +1,19 @@
+#book-icon {
+    height: 30px;
+}
+
+footer {
+    background-color: #212529;
+    color: white;
+    text-align: center;
+    /* positions footer at bottom */
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+}
+
+.book-cover-pic {
+	height: 150px;
+}
