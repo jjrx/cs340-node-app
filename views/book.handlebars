@@ -9,25 +9,22 @@
 
 <h1>Reviews</h1>
 <table class="table">
-    <thead> 
-        <th>Rating ID</th> 
-        <th>User</th>  
+    <thead>
+        <th>Rating ID</th>
+        <th>User</th>
         <th>Date of Rating</th>
-        <th>Rating</th> 
+        <th>Rating</th>
         <th>Review</th>
-    </thead> 
+    </thead>
     <tbody>
-        {{#each reviews}} 
+        {{#each reviews}}
         <tr> 
-            <td>{{ratingID}}</td> 
-            <td>{{username}}</td> 
+            <td>{{ratingID}}</td>
+            <td>{{username}}</td>
             <td>{{rateDate}}</td>
-            <td>{{rating}}/5</td> 
-            <td>{{comments}}</td> 
-        </tr> 
-        {{/each}} 
-    </tbody> 
-</table> 
-
-
-
+            <td>{{rating}}/5</td>
+            <td>{{comments}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

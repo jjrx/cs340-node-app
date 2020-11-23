@@ -1,5 +1,27 @@
-<h3>Current Genres:</h3>
-{{#each genres}}
-<button><a href="/genres/{{genreID}}">{{genreName}}</a></button>
-{{/each}}
+ <h3>Add new genre:</h3>
+ <form id="addgenre" action="/genres" method="post">
+     Genre name: <input type="text" name="genreName">
+     <input type="submit" value="Submit">
+  </form>
+ <br/>
 
+ <h3>Genres</h3>
+ <!-- {{#each genres}}
+ <button><a href="/genres/{{genreID}}">{{genreName}}</a></button>
+ {{/each}}
+  -->
+ <table class="table">
+     <thead>
+         <th>Genre ID</th>
+         <th>Genre Name</th>
+     </thead>
+     <tbody>
+         {{#each genres}}
+         <tr>
+             <td>{{genreID}}</td>
+             <td>{{genreName}}</td>
+             <td><a href="/genres/{{genreID}}">View Books</a></td>
+         </tr>
+         {{/each}}
+     </tbody>
+ </table>

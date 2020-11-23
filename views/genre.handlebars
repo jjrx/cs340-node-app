@@ -1,6 +1,29 @@
-<h1>Books with Selected Genre:</h1>
-{{#each genreBooks}}
-<img src="{{bookCover}}" class="book-cover-pic" />
-{{/each}}
+<!-- <h1>Books with Selected Genre:</h1>
+{{#if genreBooks}}
+  {{#each genreBooks}}
+  <img src="{{bookCover}}" class="book-cover-pic" />
+  {{/each}}
+{{else}}
+  <p>No books found with this genre.</p>
+{{/if}} -->
 
 
+{{#if genre}}
+<h3>Books with <span class="highlight">{{genre.genreName}}</span> Genre</h3>
+<table class="table">
+    <thead>
+        <th>Book Cover</th>
+        <th>Book Title</th>
+    </thead>
+    <tbody>
+        {{#each genreBooks}}
+        <tr>
+            <td><img src="{{bookCover}}" class="book-cover-pic"/></td>
+            <td>{{bookTitle}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{else}}
+<p>No books found with this genre.</p>
+{{/if}}

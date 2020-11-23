@@ -1,0 +1,19 @@
+{{#if author}}
+<h3>Books by <span class="highlight">{{author.authorFirstName}} {{author.authorLastName}}</span></h3>
+<table class="table">
+    <thead>
+        <th>Book Cover</th>
+        <th>Book Title</th>
+    </thead>
+    <tbody>
+        {{#each authorBooks}}
+        <tr>
+            <td><img src="{{bookCover}}" class="book-cover-pic"/></td>
+            <td>{{bookTitle}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{else}}
+<p>No books found by this author.</p>
+{{/if}}

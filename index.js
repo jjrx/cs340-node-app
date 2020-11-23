@@ -21,8 +21,9 @@ app.set('port', process.argv[2]);
 app.set('mysql', mysql);
 // app.use('/people_certs', require('./people_certs.js'));
 app.use('/books', require('./books.js'));
-// app.use('/authors', require('./authors.js'));
+app.use('/authors', require('./authors.js'));
 app.use('/genres', require('./genres.js'));
+app.use('/users', require('./users.js'));
 
 app.use('/', express.static('public'));
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/css'));

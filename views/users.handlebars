@@ -1,0 +1,24 @@
+<h3>Users</h3>
+<table class="table">
+    <thead>
+        <th>Profile Picture</th>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Join Date</th>
+    </thead>
+    <tbody>
+        {{#each users}}
+        <tr>
+            <td><img src="{{userPicture}}" class="book-cover-pic"/></td>
+            <td>{{userID}}</td>
+            <td>{{username}}</td>
+            <td>{{userFirstName}}</td>
+            <td>{{userLastName}}</td>
+            <td>{{userCreationDate}}</td>
+            <td><a href="/users/{{userID}}">View Info</a></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

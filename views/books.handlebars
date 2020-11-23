@@ -1,23 +1,22 @@
-<h3>Current Books:</h3>
+<h3>Books</h3>
 <table class="table">
-    <thead> 
-        <th>Book Cover</th>  
-        <th>ID</th> 
-        <th>Book Title</th> 
-        <th>Number of Pages</th> 
+    <thead>
+        <th>Book Cover</th>
+        <th>ID</th>
+        <th>Book Title</th>
+        <th>Number of Pages</th>
         <th>Year of Publication</th>
-    </thead> 
+    </thead>
     <tbody>
-        {{#each books}} 
-        <tr> 
+        {{#each books}}
+        <tr>
             <td><img src="{{bookCover}}" class="book-cover-pic" /></td>
-            <td>{{bookID}}</td> 
-            <td>{{bookTitle}}</td> 
-            <td>{{numPages}}</td> 
+            <td>{{bookID}}</td>
+            <td>{{bookTitle}}</td>
+            <td>{{numPages}}</td>
             <td>{{publishedYear}}</td>
-            <td><a href="/books/{{bookID}}">View</a></td>
-        </tr> 
-        {{/each}} 
-    </tbody> 
-</table> 
-
+            <td><a href="/books/{{bookID}}">View Reviews</a></td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
