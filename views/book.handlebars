@@ -1,4 +1,4 @@
-<h1>Book Info</h1>
+<h3>Book Info</h3>
 <img src="{{book.bookCover}}" class="book-cover-pic" />
 <ul>
 	<li>Book ID: {{book.bookID}}</li>
@@ -9,7 +9,21 @@
 	<li>Year of Publication: {{book.publishedYear}}</li>
 </ul>
 
-<h1>Reviews</h1>
+<h3>Add a review for this book</h3>
+<form id="addreview" action="/books/{{book.bookID}}" method="post">
+		Book ID: <input type="number" name="bookID" value={{book.bookID}} readonly="readonly">
+		User: <select id='user_filter' name="user" required>
+        {{#each users}}
+        <option value="{{userID}}">{{username}}</option>
+        {{/each}}
+    </select>
+    Rating: <input type="number" name="rating" min="1" max="5" required>
+    Comments: <input type="text" name="comments">
+    <input type="submit" value="Submit">
+ </form>
+<br/>
+
+<h3>Reviews</h3>
 <table class="table">
     <thead>
         <th>Rating ID</th>

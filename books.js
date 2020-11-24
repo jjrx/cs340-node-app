@@ -26,6 +26,17 @@ module.exports = function() {
     });
   }
 
+  function getUsers(res, mysql, context, complete) {
+    mysql.pool.query("SELECT * FROM Users", function(error, results, fields) {
+      if (error) {
+        res.write(JSON.stringify(error));
+        res.end();
+      }
+      context.users = results;
+      complete();
+    });
+  }
+
   function getBook(res, mysql, context, id, complete) {
     var sql = "SELECT Books.*, \
     GROUP_CONCAT(distinct CONCAT(Authors.authorFirstName, ' ', Authors.authorLastName) SEPARATOR ', ') AS 'authors', \
@@ -71,10 +82,10 @@ module.exports = function() {
     var mysql = req.app.get('mysql');
     getBook(res, mysql, context, req.params.id, complete);
     getReviewsByBook(res, mysql, context, req.params.id, complete);
-
+    getUsers(res, mysql, context, complete);
     function complete() {
       callbackCount++;
-      if (callbackCount >= 2) {
+      if (callbackCount >= 3) {
         res.render('book', context);
       }
 
@@ -92,6 +103,30 @@ module.exports = function() {
         res.end();
       } else {
         res.redirect('books');
+      }
+    });
+  });
+
+  function dateToYMD(date) {
+    var d = date.getDate();
+    var m = date.getMonth() + 1; //Month from 0 to 11
+    var y = date.getFullYear();
+    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+}
+
+  router.post('/:id', function(req, res) {
+    var curDate = new Date();
+    var curDateString = dateToYMD(curDate);
+    var mysql = req.app.get('mysql');
+    var sql = "INSERT INTO Ratings (bookID, userID, rating, comments, rateDate) VALUES (?,?,?,?,?)";
+    var inserts = [req.body.bookID, req.body.user, req.body.rating, req.body.comments, curDateString];
+    sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
+      if (error) {
+        console.log(JSON.stringify(error))
+        res.write(JSON.stringify(error));
+        res.end();
+      } else {
+        res.redirect(req.get('referer'));
       }
     });
   });

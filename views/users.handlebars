@@ -1,4 +1,14 @@
+<h3>Search for Users</h3>
+<form id="searchusers" action="/users" method="post">
+    Username: <input type="text" name="username" placeholder="">
+    First name: <input type="text" name="fname" placeholder="">
+    Last name: <input type="text" name="lname" placeholder="">
+    <input type="submit" value="Submit">
+ </form>
+<br />
+
 <h3>Users</h3>
+{{#if users}}
 <table class="table">
     <thead>
         <th>Profile Picture</th>
@@ -22,3 +32,8 @@
         {{/each}}
     </tbody>
 </table>
+{{else}}
+<p>
+  No users found.
+</p>
+{{/if}}

@@ -27,6 +27,7 @@ module.exports = function(){
         });
     }
 
+
     function getReviewsByUser(res, mysql, context, id, complete){
       var query = "SELECT bookTitle, bookCover, ratingID, username, rating, comments, rateDate FROM Ratings INNER JOIN Books ON Ratings.bookID = Books.bookID INNER JOIN Users ON Ratings.userID = Users.UserID WHERE Users.userID = ?";
       var inserts = [id];
@@ -70,6 +71,23 @@ module.exports = function(){
             }
 
         }
+    });
+
+    router.post('/', function(req, res) {
+      var context = {};
+      var mysql = req.app.get('mysql');
+      var sql = "SELECT * FROM Users WHERE username = ? OR userFirstName = ? OR userLastName = ?";
+      var inserts = [req.body.username, req.body.fname, req.body.lname];
+      sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
+        if (error) {
+          console.log(JSON.stringify(error))
+          res.write(JSON.stringify(error));
+          res.end();
+        } else {
+          context.users = results;
+          res.render('users', context);
+        }
+      });
     });
 
     return router;
