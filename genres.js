@@ -2,6 +2,7 @@ module.exports = function(){
     var express = require('express');
     var router = express.Router();
 
+    /* Get all data from Genres entity to display */
     function getGenres(res, mysql, context, complete){
         mysql.pool.query("SELECT * FROM Genres", function(error, results, fields){
             if(error){
@@ -13,6 +14,7 @@ module.exports = function(){
         });
     }
 
+    /* Get all books with a particular genre by querying BookGenres entity */
     function getBooksByGenre(res, mysql, context, id, complete){
       var query = "SELECT genreName, bookCover, Books.bookID, bookTitle FROM Genres \
       INNER JOIN BookGenres ON Genres.genreID = BookGenres.genreID \
@@ -30,11 +32,10 @@ module.exports = function(){
         });
     }
 
-    // Display all book data
+    /* Display all genre data in table on /genres page */
     router.get('/', function(req, res){
         var callbackCount = 0;
         var context = {};
-
         var mysql = req.app.get('mysql');
         getGenres(res, mysql, context, complete);
         function complete(){
@@ -46,7 +47,7 @@ module.exports = function(){
 
     });
 
-    /* Display books with specific genre */
+    /* Display books with specific genre on /genres/:id page */
     router.get('/:id', function(req, res){
         callbackCount = 0;
         var context = {};
@@ -61,7 +62,7 @@ module.exports = function(){
         }
     });
 
-    /* Adds a genre, redirects to the genres page after adding */
+    /* Adds a genre, redirects to /genres page after adding */
     router.post('/', function(req, res){
         var mysql = req.app.get('mysql');
         var sql = "INSERT INTO Genres (genreName) VALUES (?)";
@@ -71,7 +72,7 @@ module.exports = function(){
                 console.log(JSON.stringify(error))
                 res.write(JSON.stringify(error));
                 res.end();
-            }else{
+            } else{
                 res.redirect('/genres');
             }
         });

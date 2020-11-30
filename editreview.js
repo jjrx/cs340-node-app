@@ -2,12 +2,14 @@ module.exports = function() {
   var express = require('express');
   var router = express.Router();
   var session = require('express-session');
+  var moment = require('moment');
 
-
+  /* Get data for a particular rating from Ratings entity */
   function getRating(res, mysql, context, id, complete) {
-    var query = "SELECT * FROM Ratings \
-    LEFT JOIN Books ON Ratings.bookID = Books.bookID \
-    WHERE ratingID = ?";
+    // var query = "SELECT * FROM Ratings \
+    // LEFT JOIN Books ON Ratings.bookID = Books.bookID \
+    // WHERE ratingID = ?";
+    var query = "SELECT * FROM Ratings WHERE ratingID=?";
     var inserts = [id];
     mysql.pool.query(query, inserts, function(error, results, fields) {
       if (error) {
@@ -19,11 +21,9 @@ module.exports = function() {
     });
   }
 
+  /* Get all bookID and bookTitle from Books entity to display in dropdown
+  in 'update review' form */
   function getBooks(res, mysql, context, complete) {
-    // var query = "SELECT DISTINCT Books.bookID, bookTitle FROM Books \
-    // LEFT JOIN Ratings ON Books.bookID = Ratings.bookID \
-    // WHERE Ratings.bookID NOT IN (SELECT bookID from Ratings WHERE ratingID = ?)"
-    // var inserts = [id];
     var query = "SELECT bookID, bookTitle FROM Books";
     mysql.pool.query(query, function(error, results, fields) {
       if (error) {
@@ -39,8 +39,9 @@ module.exports = function() {
     res.redirect('/account');
   });
 
-  /* Display info for a specific rating */
+  /* Display info for a specific rating in 'update review' form to user */
   router.get('/:id', function(req, res) {
+    // only allows form to display if user is logged on
     if (req.session.userID) {
       callbackCount = 0;
       var context = {};
@@ -54,40 +55,34 @@ module.exports = function() {
           res.render('editreview', context);
         }
       }
+    // make user login to edit reviews
     } else {
       res.redirect('/login');
     }
-
   });
 
-  function dateToYMD(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1; //Month from 0 to 11
-    var y = date.getFullYear();
-    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-}
-
   /* Update a rating */
-  router.put('/:id', function(req, res){
-      var curDate = new Date();
-      var curDateString = dateToYMD(curDate);
-      var mysql = req.app.get('mysql');
-      // convert empty string to null for successful import into db
-      if (req.body.book == '') {
-        req.body.book = null;
+  router.put('/:id', function(req, res) {
+    // convert JS date format to SQL format for insert
+    var curDate = moment();
+    var curDateString = curDate.format('YYYY-MM-DD');
+    var mysql = req.app.get('mysql');
+    // convert empty string to null for successful import into db
+    if (req.body.book == '') {
+      req.body.book = null;
+    }
+    var sql = "UPDATE Ratings SET bookID=?, rating=?, comments=?, rateDate=? WHERE ratingID=?";
+    var inserts = [req.body.book, req.body.rating, req.body.comments, curDateString, req.params.id];
+    sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.write(JSON.stringify(error));
+        res.end();
+      } else {
+        res.status(200);
+        res.end();
       }
-      var sql = "UPDATE Ratings SET bookID=?, rating=?, comments=?, rateDate=? WHERE ratingID=?";
-      var inserts = [req.body.book, req.body.rating, req.body.comments, curDateString, req.params.id];
-      sql = mysql.pool.query(sql,inserts,function(error, results, fields){
-          if(error){
-              console.log(error);
-              res.write(JSON.stringify(error));
-              res.end();
-          }else{
-              res.status(200);
-              res.end();
-          }
-      });
+    });
   });
 
   return router;

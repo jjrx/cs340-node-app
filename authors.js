@@ -2,6 +2,7 @@ module.exports = function(){
     var express = require('express');
     var router = express.Router();
 
+    /* Get all data from Authors entity to display */
     function getAuthors(res, mysql, context, complete){
         mysql.pool.query("SELECT * FROM Authors ORDER BY authorID", function(error, results, fields){
             if(error){
@@ -14,6 +15,7 @@ module.exports = function(){
         });
     }
 
+    /* Get all books for a particular author by querying BookAuthors entity */
     function getBooksByAuthor(res, mysql, context, id, complete){
       var query = "SELECT authorFirstName, authorLastName, bookCover, bookTitle, Books.bookID FROM Books \
       INNER JOIN BookAuthors ON Books.bookID = BookAuthors.bookID \
@@ -32,7 +34,7 @@ module.exports = function(){
     }
 
 
-    // Display all authors data
+    /* Display all authors data in table on /authors page */
     router.get('/', function(req, res){
         var callbackCount = 0;
         var context = {};
@@ -46,7 +48,7 @@ module.exports = function(){
         }
     });
 
-    /* Display books by author */
+    /* Display books by a particular author on /authors/:id page */
     router.get('/:id', function(req, res){
         callbackCount = 0;
         var context = {};
@@ -61,7 +63,7 @@ module.exports = function(){
         }
     });
 
-    // /* Adds an author, redirects to the authors page after adding */
+    /* Adds an author, redirects to the authors page after adding */
     router.post('/', function(req, res){
         var mysql = req.app.get('mysql');
         var sql = "INSERT INTO Authors (authorFirstName, authorLastName) VALUES (?,?)";
@@ -71,32 +73,11 @@ module.exports = function(){
                 console.log(JSON.stringify(error))
                 res.write(JSON.stringify(error));
                 res.end();
-            }else{
+            } else{
                 res.redirect('/authors');
             }
         });
     });
-
-    // /* The URI that update data is sent to in order to update a person */
-
-    // router.put('/:id', function(req, res){
-    //     var mysql = req.app.get('mysql');
-    //     console.log(req.body)
-    //     console.log(req.params.id)
-    //     var sql = "UPDATE bsg_people SET fname=?, lname=?, homeworld=?, age=? WHERE character_id=?";
-    //     var inserts = [req.body.fname, req.body.lname, req.body.homeworld, req.body.age, req.params.id];
-    //     sql = mysql.pool.query(sql,inserts,function(error, results, fields){
-    //         if(error){
-    //             console.log(error)
-    //             res.write(JSON.stringify(error));
-    //             res.end();
-    //         }else{
-    //             res.status(200);
-    //             res.end();
-    //         }
-    //     });
-    // });
-
 
     return router;
 }();

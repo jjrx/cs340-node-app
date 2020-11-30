@@ -1,14 +1,11 @@
 <form id="edit-review" onsubmit="editReview({{rating.ratingID}})">
-	<!-- <h3>Update Review for <span class="highlight">{{rating.bookTitle}}</span></h3> -->
 	<h3>Update Review</h3>
+	<!-- <h3>Update Review for <span class="highlight">{{rating.bookTitle}}</span></h3> -->
 	<!-- <img src="{{rating.bookCover}}" class="book-cover-pic" /><br /><br /> -->
 	<!-- <input type="hidden" name="ratingID" value="{{rating.ratingID}}" readonly="readonly">
 	<input type="hidden" name="bookID" value="{{rating.bookID}}" readonly="readonly"> -->
 	Book: <select name="book" id="book-selector">
 						<option value="">NULL</option>
-						<!-- {{#if rating.bookID}}
-						<option value="{{rating.bookID}}" selected>{{rating.bookTitle}}</option>
-						{{/if}} -->
         {{#each books}}
 						{{#ifEqual ../rating.bookID bookID}}
 							<option value="{{bookID}}" selected>{{bookTitle}}</option>

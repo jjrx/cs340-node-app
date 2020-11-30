@@ -2,6 +2,7 @@ module.exports = function(){
     var express = require('express');
     var router = express.Router();
 
+    /* Gets all info for a particular user from Users entity */
     function getUser(res, mysql, context, id, complete){
         var sql = "SELECT * FROM Users WHERE userID = ?";
         var inserts = [id];
@@ -15,7 +16,9 @@ module.exports = function(){
         });
     }
 
+    /* Gets all ratings for a particular user */
     function getReviewsByUser(res, mysql, context, id, complete){
+      // left join in case bookID for a review is NULL
       var query = "SELECT Books.bookID, bookTitle, bookCover, ratingID, username, rating, comments, rateDate FROM Ratings \
       LEFT JOIN Books ON Ratings.bookID = Books.bookID \
       LEFT JOIN Users ON Ratings.userID = Users.UserID \
@@ -31,9 +34,9 @@ module.exports = function(){
         });
     }
 
-
-    /* Display info and reviews for logged in user */
+    /* Display info and reviews for user after s/he logs in */
     router.get('/', function(req, res){
+      // only display data if user is logged in
       if (req.session.userID) {
         callbackCount = 0;
         var context = {};
@@ -47,38 +50,13 @@ module.exports = function(){
                 res.render('account', context);
             }
         }
+      // redirect to login form if there is no current user session
       } else {
         res.redirect('login');
       }
     });
 
-    function dateToYMD(date) {
-      var d = date.getDate();
-      var m = date.getMonth() + 1; //Month from 0 to 11
-      var y = date.getFullYear();
-      return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  }
-
-    // router.put('/:id', function(req, res){
-    //     var curDate = new Date();
-    //     var curDateString = dateToYMD(curDate);
-    //     var mysql = req.app.get('mysql');
-    //     console.log(req.body)
-    //     console.log(req.params.id)
-    //     var sql = "UPDATE Ratings SET rating=?, comments=?, rateDate=? WHERE ratingID=?";
-    //     var inserts = [req.body.rating, req.body.comments, curDateString];
-    //     sql = mysql.pool.query(sql,inserts,function(error, results, fields){
-    //         if(error){
-    //             console.log(error)
-    //             res.write(JSON.stringify(error));
-    //             res.end();
-    //         }else{
-    //             res.status(200);
-    //             res.end();
-    //         }
-    //     });
-    // });
-
+    /* Deletes a particular rating */
     router.delete('/:id', function(req, res){
         var mysql = req.app.get('mysql');
         var sql = "DELETE FROM Ratings WHERE ratingID = ?";

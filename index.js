@@ -30,15 +30,16 @@ app.set('view engine', 'handlebars');
 app.set('port', process.argv[2]);
 app.set('mysql', mysql);
 
-// helper function that formats SQL date to "YYYY-MM-DD"
+/* helper function that formats SQL date to "YYYY-MM-DD" */
 handlebars.handlebars.registerHelper('formatDate', function(dateString) {
     return new handlebars.handlebars.SafeString(
         moment(dateString).format("YYYY-MM-DD")
     );
 });
 
-handlebars.handlebars.registerHelper('ifEqual', function(v1, v2, options) {
-  if(v1 === v2) {
+/* helper function that checks if two inputs are equal */
+handlebars.handlebars.registerHelper('ifEqual', function(param1, param2, options) {
+  if(param1 === param2) {
     return options.fn(this);
   }
   return options.inverse(this);

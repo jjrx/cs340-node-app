@@ -36,27 +36,26 @@
 
 <h3>Reviews</h3>
 <table class="table">
-    <thead>
-        <th>Rating ID</th>
-				<th>Book Cover</th>
-				<th>Book Title</th>
-        <th>Date of Rating</th>
-        <th>Rating</th>
-        <th>Review</th>
-    </thead>
-    <tbody>
-        {{#each reviews}}
-        <tr>
-            <td>{{ratingID}}</td>
-						<td><a href="/books/{{bookID}}"><img src="{{bookCover}}" class="book-cover-pic" /></a></td>
-						<td>{{bookTitle}}</td>
-            <td>{{formatDate rateDate}}</td>
-            <td>{{rating}}/5</td>
-            <td>{{comments}}</td>
-						<td><a href="editreview/{{ratingID}}"><button class="btn btn-warning">Edit</button></a></td>
-						<td><button class="btn btn-danger" onclick="deleteReview({{ratingID}})">Delete</button></td>
-
-        </tr>
-        {{/each}}
-    </tbody>
+	<thead>
+		<th>Rating ID</th>
+		<th>Book Cover</th>
+		<th>Book Title</th>
+		<th>Date of Rating</th>
+		<th>Rating</th>
+		<th>Review</th>
+	</thead>
+	<tbody>
+		{{#each reviews}}
+			<tr>
+				<td>{{ratingID}}</td>
+				<td><a href="/books/{{bookID}}"><img src="{{bookCover}}" class="book-cover-pic" /></a></td>
+				<td>{{bookTitle}}</td>
+				<td>{{formatDate rateDate}}</td>
+				<td>{{rating}}/5</td>
+				<td>{{comments}}</td>
+				<td><a href="editreview/{{ratingID}}"><button class="btn btn-warning">Edit</button></a></td>
+				<td><button class="btn btn-danger" onclick="deleteReview({{ratingID}})">Delete</button></td>
+			</tr>
+		{{/each}}
+	</tbody>
 </table>

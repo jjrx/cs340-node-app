@@ -2,7 +2,9 @@ module.exports = function() {
   var express = require('express');
   var router = express.Router();
   var session = require('express-session');
+  var moment = require('moment');
 
+  /* Gets all data from Books entity to display on /books page */
   function getBooks(res, mysql, context, complete) {
     mysql.pool.query("SELECT * FROM Books", function(error, results, fields) {
       if (error) {
@@ -14,8 +16,11 @@ module.exports = function() {
     });
   }
 
+  /* Gets all reviews for a particular book to display on /books/:id page */
   function getReviewsByBook(res, mysql, context, id, complete) {
-    var query = "SELECT ratingID, Users.userID, username, rating, comments, rateDate FROM Ratings INNER JOIN Users ON Ratings.userID = Users.UserID WHERE bookID = ?";
+    var query = "SELECT ratingID, Users.userID, username, rating, comments, rateDate FROM Ratings \
+    INNER JOIN Users ON Ratings.userID = Users.UserID \
+    WHERE bookID = ?";
     var inserts = [id];
     mysql.pool.query(query, inserts, function(error, results, fields) {
       if (error) {
@@ -27,17 +32,8 @@ module.exports = function() {
     });
   }
 
-  function getUsers(res, mysql, context, complete) {
-    mysql.pool.query("SELECT * FROM Users", function(error, results, fields) {
-      if (error) {
-        res.write(JSON.stringify(error));
-        res.end();
-      }
-      context.users = results;
-      complete();
-    });
-  }
-
+  /* Display authors, genres, and all info from Books entity for a particular book to display
+  in a blurb on its individual page */
   function getBook(res, mysql, context, id, complete) {
     var sql = "SELECT Books.*, \
     GROUP_CONCAT(distinct CONCAT(Authors.authorFirstName, ' ', Authors.authorLastName) SEPARATOR ', ') AS 'authors', \
@@ -58,125 +54,55 @@ module.exports = function() {
     });
   }
 
-  //
-  //   function insertBook(res, req, mysql, context) {
-  //     var sql = "INSERT INTO Books (bookTitle, numPages, publishedYear, bookCover) VALUES (?,?,?,?)";
-  //     var inserts = [req.body.title, req.body.pages, req.body.year, req.body.url];
-  //     return new Promise((resolve, reject) => {
-  //       mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //       // if (error) {
-  //       //   res.write(JSON.stringify(error));
-  //       //   res.end();
-  //       // }
-  //         context.bookID = results.insertId;
-  //         console.log("Inserted book with ID: ", context.bookID);
-  //         resolve(true);
-  //       })
-  //     });
-  //   }
-  //
-  // function insertAuthors(res, req, mysql, context) {
-  //     const authorPromises = [];
-  //     var authors = req.body.authors.split(",");
-  //     for (let a = 0; a < authors.length; a++) {
-  //       var authorPromise = new Promise((resolve, reject) => {
-  //         var authorName = authors[a].trim();
-  //         console.log(req.body.title, authorName);
-  //         authorName = authorName.split(" ");
-  //         var firstName = authorName[0];
-  //         var lastName = authorName[1];
-  //         var sql = "INSERT IGNORE INTO Authors (authorFirstName, authorLastName) VALUES (?,?)";
-  //         var inserts = [firstName, lastName];
-  //         mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //           // if (error) {
-  //           //   res.write(JSON.stringify(error));
-  //           //   res.end();
-  //           // }
-  //           console.log(inserts);
-  //           var sql = "SELECT authorID FROM Authors WHERE authorFirstName=? AND authorLastName=?";
-  //           mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //             var authorID = results[0].authorID;
-  //             var relationship = [context.bookID, authorID];
-  //             console.log("cur relationship: ", relationship);
-  //             context.bookAuthors.push(relationship);
-  //             console.log(context.bookAuthors.length);
-  //             resolve(true);
-  //           });
-  //         });
-  //
-  //       });
-  //       authorPromises.push(authorPromise);
-  //     }
-  //     // complete();
-  //     return Promise.all(authorPromises);
-  //   }
-  //
-  //   function insertBookAuthors(res, req, mysql, context) {
-  //     console.log('test');
-  //       const bookAuthorPromises = [];
-  //       // console.log("testing: ", context.bookAuthors);
-  //       for (let b = 0; b < context.bookAuthors.length; b++) {
-  //         var bookAuthorPromise = new Promise((resolve, reject) => {
-  //           console.log(context.bookAuthors[b]);
-  //           var sql = "INSERT INTO BookAuthors (bookID, authorID) VALUES (?,?)";
-  //           var bookID = context.bookAuthors[b][0];
-  //           var authorID = context.bookAuthors[b][1];
-  //           var inserts = [bookID, authorID];
-  //           console.log("Attempted inserts: ", inserts);
-  //           mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //             // if (error) {
-  //             //   res.write(JSON.stringify(error));
-  //             //   res.end();
-  //             // }
-  //             console.log(results);
-  //             resolve(true);
-  //           });
-  //         })
-  //         bookAuthorPromises.push(bookAuthorPromise);
-  //       }
-  //       // complete();
-  //       return Promise.all(bookAuthorPromises);
-  //     }
-
-
+  /* Insert book data into Books entity */
   async function insertBook(res, req, mysql, context) {
     var sql = "INSERT INTO Books (bookTitle, numPages, publishedYear, bookCover) VALUES (?,?,?,?)";
+    // insert placeholder book cover image if user didn't supply book cover
+    if (req.body.url == '') {
+      req.body.url = '/img/no-cover.jpg';
+    }
     var inserts = [req.body.title, req.body.pages, req.body.year, req.body.url];
     return new Promise((resolve, reject) => {
       mysql.pool.query(sql, inserts, function(error, results, fields) {
-        // if (error) {
-        //   res.write(JSON.stringify(error));
-        //   res.end();
-        // }
+        if (error) {
+          res.write(JSON.stringify(error));
+          res.end();
+        }
+        // store book ID so that we can associate it with author IDs and genre IDs
+        // for insertion into BookAuthors and BookGenres tables
         context.bookID = results.insertId;
-        console.log("Inserted book with ID: ", context.bookID);
         resolve(true);
       })
     });
   }
 
+  /* Insert author data into Authors entity for all authors associated with added book */
   async function insertAuthors(res, req, mysql, context) {
     const authorPromises = [];
+    // user entered a list of authors in 'add a book form', each separated by a comma
     var authors = req.body.authors.split(",");
+    // add each author to Authors entity (if they don't already exist)
     for (let a = 0; a < authors.length; a++) {
       var authorPromise = new Promise((resolve, reject) => {
+        // split each author's name into first name and last name
         var authorName = authors[a].trim();
-        console.log("inserting: ", req.body.title, authorName);
         authorName = authorName.split(" ");
         var firstName = authorName[0];
         var lastName = authorName[1];
+        // 'IGNORE' because we don't want to throw an error if author already exists in db
         var sql = "INSERT IGNORE INTO Authors (authorFirstName, authorLastName) VALUES (?,?)";
         var inserts = [firstName, lastName];
         mysql.pool.query(sql, inserts, function(error, results, fields) {
-          // if (error) {
-          //   res.write(JSON.stringify(error));
-          //   res.end();
-          // }
+          if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+          }
+          // ascertain the authorID of the author we just attempted to insert to associate them
+          // with the book we added
           var sql = "SELECT authorID FROM Authors WHERE authorFirstName=? AND authorLastName=?";
           mysql.pool.query(sql, inserts, function(error, results, fields) {
             var authorID = results[0].authorID;
             var relationship = [context.bookID, authorID];
-            console.log("cur author relationship: ", relationship);
             context.bookAuthors.push(relationship);
             resolve(true);
           });
@@ -189,22 +115,20 @@ module.exports = function() {
     return Promise.all(authorPromises);
   }
 
+  /* Insert each book-author relationship into BookAuthors entity */
   async function insertBookAuthors(res, req, mysql, context) {
     const bookAuthorPromises = [];
-    // console.log("testing: ", context.bookAuthors);
     for (let b = 0; b < context.bookAuthors.length; b++) {
       var bookAuthorPromise = new Promise((resolve, reject) => {
-        console.log(context.bookAuthors[b]);
         var sql = "INSERT INTO BookAuthors (bookID, authorID) VALUES (?,?)";
         var bookID = context.bookAuthors[b][0];
         var authorID = context.bookAuthors[b][1];
         var inserts = [bookID, authorID];
-        console.log("attempted BookAuthors inserts: ", inserts);
         mysql.pool.query(sql, inserts, function(error, results, fields) {
-          // if (error) {
-          //   res.write(JSON.stringify(error));
-          //   res.end();
-          // }
+          if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+          }
           resolve(true);
         });
       })
@@ -214,26 +138,28 @@ module.exports = function() {
     return Promise.all(bookAuthorPromises);
   }
 
-
+  /* Insert genre data into Genres entity for all genres associated with added book */
   async function insertGenres(res, req, mysql, context) {
     const genrePromises = [];
+    // user entered a list of genres in 'add a book form', each separated by a comma
     var genres = req.body.genres.split(",");
     for (let g = 0; g < genres.length; g++) {
       var genrePromise = new Promise((resolve, reject) => {
         var genreName = genres[g].trim();
-        console.log("inserting: ", req.body.title, genreName);
+        // 'IGNORE' because we don't want to throw an error if genre already exists in db
         var sql = "INSERT IGNORE INTO Genres (genreName) VALUES (?)";
         var inserts = [genreName];
         mysql.pool.query(sql, inserts, function(error, results, fields) {
-          // if (error) {
-          //   res.write(JSON.stringify(error));
-          //   res.end();
-          // }
+          if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+          }
+          // ascertain the genreID of the genre we just attempted to insert to associate it
+          // with the book we added
           var sql = "SELECT genreID FROM Genres WHERE genreName=?";
           mysql.pool.query(sql, inserts, function(error, results, fields) {
             var genreID = results[0].genreID;
             var relationship = [context.bookID, genreID];
-            console.log("cur genre relationship: ", relationship);
             context.bookGenres.push(relationship);
             resolve(true);
           });
@@ -246,21 +172,20 @@ module.exports = function() {
     return Promise.all(genrePromises);
   }
 
+  /* Insert each book-genre relationship into BookGenres entity */
   async function insertBookGenres(res, req, mysql, context) {
     const bookGenrePromises = [];
-    // console.log("testing: ", context.bookAuthors);
     for (let b = 0; b < context.bookGenres.length; b++) {
       var bookGenrePomise = new Promise((resolve, reject) => {
         var sql = "INSERT INTO BookGenres (bookID, genreID) VALUES (?,?)";
         var bookID = context.bookGenres[b][0];
         var genreID = context.bookGenres[b][1];
         var inserts = [bookID, genreID];
-        console.log("attempted BookGenres inserts: ", inserts);
         mysql.pool.query(sql, inserts, function(error, results, fields) {
-          // if (error) {
-          //   res.write(JSON.stringify(error));
-          //   res.end();
-          // }
+          if (error) {
+            res.write(JSON.stringify(error));
+            res.end();
+          }
           resolve(true);
         });
       })
@@ -270,24 +195,7 @@ module.exports = function() {
     return Promise.all(bookGenrePromises);
   }
 
-
-
-  // function getBookID(res, mysql, context, bookTitle complete) {
-  //   var sql = "SELECT bookID FROM Books WHERE bookTitle = ?";
-  //   var inserts = [bookTitle];
-  //   mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //     if (error) {
-  //       res.write(JSON.stringify(error));
-  //       res.end();
-  //     }
-  //     context.bookID = results[0];
-  //     complete();
-  //   });
-  // }
-
-
-
-  // Display all book data
+  /* Display all data from Books entity on /books page in table */
   router.get('/', function(req, res) {
     var callbackCount = 0;
     var context = {};
@@ -301,53 +209,33 @@ module.exports = function() {
         res.render('books', context);
       }
     }
-
   });
 
-  /* Display info for a specific book */
+  /* Display info and reviews for a specific book when visiting /books/:id page */
   router.get('/:id', function(req, res) {
     callbackCount = 0;
     var context = {};
     var mysql = req.app.get('mysql');
     getBook(res, mysql, context, req.params.id, complete);
     getReviewsByBook(res, mysql, context, req.params.id, complete);
-    getUsers(res, mysql, context, complete);
 
     function complete() {
       callbackCount++;
-      if (callbackCount >= 3) {
+      if (callbackCount >= 2) {
         res.render('book', context);
       }
 
     }
   });
 
-  // router.post('/', function(req, res) {
-  //   var mysql = req.app.get('mysql');
-  //   var sql = "INSERT INTO Books (bookTitle, numPages, publishedYear, bookCover) VALUES (?,?,?,?)";
-  //   var inserts = [req.body.title, req.body.pages, req.body.year, req.body.url];
-  //   sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //     if (error) {
-  //       console.log(JSON.stringify(error))
-  //       res.write(JSON.stringify(error));
-  //       res.end();
-  //     } else {
-  //       res.redirect('books');
-  //     }
-  //   });
-  // });
-
-  function dateToYMD(date) {
-    var d = date.getDate();
-    var m = date.getMonth() + 1; //Month from 0 to 11
-    var y = date.getFullYear();
-    return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-  }
-
+  /* Insert a rating for a book into Ratings entity */
+  /* Note: there is an 'add a review' form on each book's /book/:id page */
   router.post('/:id', function(req, res) {
-    var curDate = new Date();
-    var curDateString = dateToYMD(curDate);
+    // convert JS date format to SQL format for insert
+    var curDate = moment();
+    var curDateString = curDate.format('YYYY-MM-DD');
     var mysql = req.app.get('mysql');
+    // only allow user to add a rating if they are logged in
     if (req.session.userID) {
       var sql = "INSERT INTO Ratings (bookID, userID, rating, comments, rateDate) VALUES (?,?,?,?,?)";
       var inserts = [req.body.bookID, req.session.userID, req.body.rating, req.body.comments, curDateString];
@@ -360,129 +248,29 @@ module.exports = function() {
           res.redirect(req.get('referer'));
         }
       });
+    // user must be logged in to add a rating
     } else {
-      // you must be signed in
       res.redirect('/login');
     }
-
   });
 
-  /* Adds a book, redirects to the books page after adding */
+  /* Adds a book by inserting into Books, Authors (if necessary), BookAuthors,
+  Genres (if necessary), and BookGenres entities; then reload books page after adding */
   router.post('/', async function(req, res) {
-    // var callbackCount = 0;
     var context = {
       bookAuthors: [],
       bookGenres: []
     };
     var mysql = req.app.get('mysql');
-    // insertBook(res, req, mysql, context)
-    // .then(insertAuthors(res, req, mysql, context))
-    // .then(insertBookAuthors(res, req, mysql, context))
-    // .catch(function(error) {
-    //   res.write(JSON.stringify(error));
-    //   res.end();
-    // });
     let result = await insertBook(res, req, mysql, context);
     result = await insertAuthors(res, req, mysql, context);
     result = await insertBookAuthors(res, req, mysql, context);
     result = await insertGenres(res, req, mysql, context);
     result = await insertBookGenres(res, req, mysql, context);
     res.redirect('books');
-
-
-    // function complete() {
-    //   callbackCount++;
-    //   if (callbackCount >= 3) {
-    //     res.render('book', context);
-    //   }
-    // }
   });
 
-  // /* Adds a book, redirects to the books page after adding */
-  // router.post('/', function(req, res) {
-  //   var mysql = req.app.get('mysql');
-  //   var sql = "INSERT INTO Books (bookTitle, numPages, publishedYear, bookCover) VALUES (?,?,?,?)";
-  //   var inserts = [req.body.title, req.body.pages, req.body.year, req.body.url];
-  //   sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //     if (error) {
-  //       console.log(JSON.stringify(error))
-  //       res.write(JSON.stringify(error));
-  //       res.end();
-  //     } else {
-  //       var authors = req.body.authors.split(",");
-  //       async.forEach()
-  //       for (var a = 0; a < authors.length; a++) {
-  //         var authorName = authors[a].trim();
-  //         console.log(req.body.title, authorName);
-  //         authorName = authorName.split(" ");
-  //         var firstName = authorName[0];
-  //         var lastName = authorName[1];
-  //         var sql = "INSERT IGNORE INTO Authors (authorFirstName, authorLastName) VALUES (?,?)";
-  //         var inserts = [firstName, lastName];
-  //         sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //           if (error) {
-  //             console.log(JSON.stringify(error))
-  //             res.write(JSON.stringify(error));
-  //             res.end();
-  //           } else {
-  //             // BOOKAUTHORS
-  //             var sql = "SELECT bookID FROM Books WHERE bookTitle = ?";
-  //             var inserts = [req.body.title];
-  //             sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //               if (error) {
-  //                 console.log(JSON.stringify(error))
-  //                 res.write(JSON.stringify(error));
-  //                 res.end();
-  //               } else {
-  //                 var bookID = results[0].bookID;
-  //                 var sql = "SELECT authorID FROM Authors WHERE authorFirstName = ? AND authorLastName = ?";
-  //                 var inserts = [firstName, lastName];
-  //                 sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //                   if (error) {
-  //                     console.log(JSON.stringify(error))
-  //                     res.write(JSON.stringify(error));
-  //                     res.end();
-  //                   } else {
-  //                     var authorID = results[0].authorID;
-  //                     var sql = "INSERT IGNORE INTO BookAuthors (bookID, authorID) VALUES (?,?)";
-  //                     var inserts = [bookID, authorID];
-  //                     sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //                       if (error) {
-  //                         console.log(JSON.stringify(error))
-  //                         res.write(JSON.stringify(error));
-  //                         res.end();
-  //                       }
-  //                     });
-  //                   }
-  //                 });
-  //               }
-  //             });
-  //           }
-  //         });
-  //       }
-  //
-  //       var genres = req.body.genres.split(",");
-  //       for (var g = 0; g < genres.length; g++) {
-  //         var genre = genres[g].trim();
-  //         var sql = "INSERT IGNORE INTO Genres (genreName) VALUES (?)";
-  //         var inserts = [genre];
-  //         sql = mysql.pool.query(sql, inserts, function(error, results, fields) {
-  //           if (error) {
-  //             console.log(JSON.stringify(error))
-  //             res.write(JSON.stringify(error));
-  //             res.end();
-  //           } else {
-  //             // BOOKGENRES
-  //           }
-  //         });
-  //       }
-  //       res.redirect('books');
-  //
-  //     }
-  //   });
-  //
-  // });
-
+  /* Deletes a book in Books entity */
   router.delete('/:id', function(req, res) {
     var mysql = req.app.get('mysql');
     var sql = "DELETE FROM Books WHERE bookID = ?";
