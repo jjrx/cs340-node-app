@@ -1,46 +1,79 @@
-<h3>Book Info</h3>
-<img src="{{book.bookCover}}" class="book-cover-pic" />
-<ul>
-	<li>Book ID: {{book.bookID}}</li>
-	<li>Title: {{book.bookTitle}}</li>
-	<li>Author(s): {{book.authors}}</li>
-	<li>Genre(s): {{book.genres}}</li>
-	<li>Number of Pages: {{book.numPages}}</li>
-	<li>Year of Publication: {{book.publishedYear}}</li>
-</ul>
+<div class="container display">
+	<div class="row justify-content-md-center">
+		<h3>Book Info</h3>
+	</div>
+	<div class="row justify-content-md-center">
+		<div class="col-md-auto">
+			<img src="{{book.bookCover}}" class="book-cover-pic" />
+		</div>
+		<div class="col-md-auto">
+			<table class="table borderless">
+				<tbody>
+					<tr>
+						<th>Book ID</th>
+						<td>{{book.bookID}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Title</th>
+						<td><span class="text-success">{{book.bookTitle}}</span></td>
+					</tr>
+					<tr>
+						<th scope="row">Author(s)</th>
+						<td>{{book.authors}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Genre(s)</th>
+						<td>{{book.genres}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Number of Pages</th>
+						<td>{{book.numPages}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Year of Publication</th>
+						<td>{{book.publishedYear}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
 
-<h3>Add a review for this book</h3>
+
 <form id="addreview" action="/books/{{book.bookID}}" method="post">
-		Book ID: <input type="number" name="bookID" value={{book.bookID}} readonly="readonly">
-		User: <select id='user_filter' name="user" required>
-        {{#each users}}
-        <option value="{{userID}}">{{username}}</option>
-        {{/each}}
-    </select>
-    Rating: <input type="number" name="rating" min="1" max="5" required>
-    Comments: <input type="text" name="comments">
-    <input type="submit" value="Submit">
- </form>
-<br/>
+	<h3>Add a review for this book</h3>
+	<!-- Hidden book ID form -->
+	<input type="hidden" name="bookID" value={{book.bookID}} readonly="readonly">
+	<!-- User: <select id='user_filter' name="user" required>
+		{{#each users}}
+			<option value="{{userID}}">{{username}}</option>
+		{{/each}}
+	</select> -->
+	Rating: <input type="number" name="rating" min="1" max="5" required>
+	Comments: <input type="text" name="comments">
+	<input type="submit" value="Submit" class="btn btn-primary"><br />
+	<span class="font-italic text-secondary">The rating should be a number between 1 and 5.</span>
+</form>
+<br />
 
 <h3>Reviews</h3>
 <table class="table">
-    <thead>
-        <th>Rating ID</th>
-        <th>User</th>
-        <th>Date of Rating</th>
-        <th>Rating</th>
-        <th>Review</th>
-    </thead>
-    <tbody>
-        {{#each reviews}}
-        <tr>
-            <td>{{ratingID}}</td>
-            <td>{{username}}</td>
-            <td>{{rateDate}}</td>
-            <td>{{rating}}/5</td>
-            <td>{{comments}}</td>
-        </tr>
-        {{/each}}
-    </tbody>
+	<thead>
+		<th>Rating ID</th>
+		<th>User</th>
+		<th>Date of Rating</th>
+		<th>Rating</th>
+		<th>Review</th>
+	</thead>
+	<tbody>
+		{{#each reviews}}
+			<tr>
+				<td>{{ratingID}}</td>
+				<td><a href="/users/{{userID}}">{{username}}</a></td>
+				<td>{{formatDate rateDate}}</td>
+				<td>{{rating}}/5</td>
+				<td>{{comments}}</td>
+			</tr>
+		{{/each}}
+	</tbody>
 </table>

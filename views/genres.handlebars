@@ -1,15 +1,12 @@
- <h3>Add new genre:</h3>
- <form id="addgenre" action="/genres" method="post">
+<form id="addgenre" action="/genres" method="post">
+    <h3>Add new genre:</h3>
      Genre name: <input type="text" name="genreName">
-     <input type="submit" value="Submit">
+     <input type="submit" value="Submit" class="btn btn-primary">
   </form>
  <br/>
 
  <h3>Genres</h3>
- <!-- {{#each genres}}
- <button><a href="/genres/{{genreID}}">{{genreName}}</a></button>
- {{/each}}
-  -->
+<p class="text-secondary font-italic">Click on a genre name to view books with that genre.</p>
  <table class="table">
      <thead>
          <th>Genre ID</th>
@@ -19,8 +16,7 @@
          {{#each genres}}
          <tr>
              <td>{{genreID}}</td>
-             <td>{{genreName}}</td>
-             <td><a href="/genres/{{genreID}}">View Books</a></td>
+             <td><a href="/genres/{{genreID}}">{{genreName}}</a></td>
          </tr>
          {{/each}}
      </tbody>

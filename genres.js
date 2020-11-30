@@ -14,7 +14,10 @@ module.exports = function(){
     }
 
     function getBooksByGenre(res, mysql, context, id, complete){
-      var query = "SELECT genreName, bookCover, Books.bookID, bookTitle FROM Genres INNER JOIN BookGenres ON Genres.genreID = BookGenres.genreID INNER JOIN Books ON BookGenres.bookID = Books.bookID WHERE Genres.genreID = ?";
+      var query = "SELECT genreName, bookCover, Books.bookID, bookTitle FROM Genres \
+      INNER JOIN BookGenres ON Genres.genreID = BookGenres.genreID \
+      INNER JOIN Books ON BookGenres.bookID = Books.bookID \
+      WHERE Genres.genreID = ?";
       var inserts = [id];
       mysql.pool.query(query, inserts, function(error, results, fields){
             if(error){

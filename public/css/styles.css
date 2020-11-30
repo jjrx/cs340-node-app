@@ -3,7 +3,11 @@
 }
 
 body {
-  margin-bottom: 50px;
+  margin-bottom: 70px;
+}
+
+.main-div {
+  margin-top: 20px;
 }
 
 footer {
@@ -22,6 +26,35 @@ footer {
 	height: 150px;
 }
 
+.book-cover-pic:hover {
+  opacity: 0.8;
+}
+
 .highlight {
-  color: #00a8ff;
+  color: #2ecc71;
+}
+
+form {
+  padding: 30px;
+  background-color: #ecf0f1;
+}
+
+#login, #register {
+  width: 500px;
+  margin: 0 auto;
+}
+
+#login-text, #register-text {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.borderless td, .borderless th {
+    padding: 2px;
+    border: none;
+    margin: 0;
+}
+
+.display {
+  padding: 20px;
 }

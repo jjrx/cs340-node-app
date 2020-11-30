@@ -3,7 +3,7 @@ module.exports = function(){
     var router = express.Router();
 
     function getAuthors(res, mysql, context, complete){
-        mysql.pool.query("SELECT * FROM Authors", function(error, results, fields){
+        mysql.pool.query("SELECT * FROM Authors ORDER BY authorID", function(error, results, fields){
             if(error){
                 res.write(JSON.stringify(error));
                 res.end();
@@ -15,7 +15,10 @@ module.exports = function(){
     }
 
     function getBooksByAuthor(res, mysql, context, id, complete){
-      var query = "SELECT authorFirstName, authorLastName, bookCover, bookTitle FROM Books INNER JOIN BookAuthors ON Books.bookID = BookAuthors.bookID INNER JOIN Authors ON BookAuthors.authorID = Authors.authorID WHERE Authors.authorID = ?";
+      var query = "SELECT authorFirstName, authorLastName, bookCover, bookTitle, Books.bookID FROM Books \
+      INNER JOIN BookAuthors ON Books.bookID = BookAuthors.bookID \
+      INNER JOIN Authors ON BookAuthors.authorID = Authors.authorID \
+      WHERE Authors.authorID = ?";
       var inserts = [id];
       mysql.pool.query(query, inserts, function(error, results, fields){
             if(error){
@@ -61,8 +64,8 @@ module.exports = function(){
     // /* Adds an author, redirects to the authors page after adding */
     router.post('/', function(req, res){
         var mysql = req.app.get('mysql');
-        var sql = "INSERT INTO Authors (authorFirstName, authorLastName, authorCity, authorState, authorCountry) VALUES (?,?,?,?,?)";
-        var inserts = [req.body.fname, req.body.lname, req.body.city, req.body.state, req.body.country];
+        var sql = "INSERT INTO Authors (authorFirstName, authorLastName) VALUES (?,?)";
+        var inserts = [req.body.fname, req.body.lname];
         sql = mysql.pool.query(sql,inserts,function(error, results, fields){
             if(error){
                 console.log(JSON.stringify(error))

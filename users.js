@@ -29,7 +29,10 @@ module.exports = function(){
 
 
     function getReviewsByUser(res, mysql, context, id, complete){
-      var query = "SELECT bookTitle, bookCover, ratingID, username, rating, comments, rateDate FROM Ratings INNER JOIN Books ON Ratings.bookID = Books.bookID INNER JOIN Users ON Ratings.userID = Users.UserID WHERE Users.userID = ?";
+      var query = "SELECT Books.bookID, bookTitle, bookCover, ratingID, username, rating, comments, rateDate FROM Ratings \
+      LEFT JOIN Books ON Ratings.bookID = Books.bookID \
+      LEFT JOIN Users ON Ratings.userID = Users.UserID \
+      WHERE Users.userID = ?";
       var inserts = [id];
       mysql.pool.query(query, inserts, function(error, results, fields){
             if(error){

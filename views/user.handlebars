@@ -1,11 +1,36 @@
-<h3>User Info</h3>
-<img src="/{{user.userPicture}}" class="book-cover-pic" />
-<ul>
-	<li>User ID: {{user.userID}}</li>
-	<li>Username: {{user.username}}</li>
-	<li>Full Name: {{user.userFirstName}} {{user.userLastName}}</li>
-	<li>Join Date: {{user.userCreationDate}}</li>
-</ul>
+<div class="container display">
+	<div class="row justify-content-md-center">
+		<h3>User Info</h3>
+	</div>
+	<div class="row justify-content-md-center">
+		<div class="col-md-auto">
+			<!-- <img src="/{{user.userPicture}}" class="book-cover-pic" /> -->
+			<img src="{{user.userPicture}}" class="book-cover-pic" />
+		</div>
+		<div class="col-md-auto">
+			<table class="table borderless">
+				<tbody>
+					<tr>
+						<th>User ID</th>
+						<td>{{user.userID}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Username</th>
+						<td><span class="highlight">{{user.username}}</span></td>
+					</tr>
+					<tr>
+						<th scope="row">Full Name</th>
+						<td>{{user.userFirstName}} {{user.userLastName}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Join Date</th>
+						<td>{{formatDate user.userCreationDate}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
 
 <h3>Reviews</h3>
 <table class="table">
@@ -21,9 +46,9 @@
         {{#each reviews}}
         <tr>
             <td>{{ratingID}}</td>
-						<td><img src="{{bookCover}}" class="book-cover-pic" /></td>
+						<td><a href="/books/{{bookID}}"><img src="{{bookCover}}" class="book-cover-pic" /></a></td>
 						<td>{{bookTitle}}</td>
-            <td>{{rateDate}}</td>
+            <td>{{formatDate rateDate}}</td>
             <td>{{rating}}/5</td>
             <td>{{comments}}</td>
         </tr>

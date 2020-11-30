@@ -1,0 +1,62 @@
+<a href="/logout"><button type="button" name="logout-button" class="btn btn-danger">Logout</button></a>
+
+<div class="container display">
+	<div class="row justify-content-md-center">
+		<h3>User Info</h3>
+	</div>
+	<div class="row justify-content-md-center">
+		<div class="col-md-auto">
+			<!-- <img src="/{{user.userPicture}}" class="book-cover-pic" /> -->
+			<img src="{{user.userPicture}}" class="book-cover-pic" />
+		</div>
+		<div class="col-md-auto">
+			<table class="table borderless">
+				<tbody>
+					<tr>
+						<th>User ID</th>
+						<td>{{user.userID}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Username</th>
+						<td><span class="highlight">{{user.username}}</span></td>
+					</tr>
+					<tr>
+						<th scope="row">Full Name</th>
+						<td>{{user.userFirstName}} {{user.userLastName}}</td>
+					</tr>
+					<tr>
+						<th scope="row">Join Date</th>
+						<td>{{formatDate user.userCreationDate}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<h3>Reviews</h3>
+<table class="table">
+    <thead>
+        <th>Rating ID</th>
+				<th>Book Cover</th>
+				<th>Book Title</th>
+        <th>Date of Rating</th>
+        <th>Rating</th>
+        <th>Review</th>
+    </thead>
+    <tbody>
+        {{#each reviews}}
+        <tr>
+            <td>{{ratingID}}</td>
+						<td><a href="/books/{{bookID}}"><img src="{{bookCover}}" class="book-cover-pic" /></a></td>
+						<td>{{bookTitle}}</td>
+            <td>{{formatDate rateDate}}</td>
+            <td>{{rating}}/5</td>
+            <td>{{comments}}</td>
+						<td><a href="editreview/{{ratingID}}"><button class="btn btn-warning">Edit</button></a></td>
+						<td><button class="btn btn-danger" onclick="deleteReview({{ratingID}})">Delete</button></td>
+
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

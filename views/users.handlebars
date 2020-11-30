@@ -1,14 +1,15 @@
-<h3>Search for Users</h3>
 <form id="searchusers" action="/users" method="post">
+    <h3>Search for Users</h3>
     Username: <input type="text" name="username" placeholder="">
     First name: <input type="text" name="fname" placeholder="">
     Last name: <input type="text" name="lname" placeholder="">
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" class="btn btn-primary">
  </form>
 <br />
 
 <h3>Users</h3>
 {{#if users}}
+<p class="text-secondary font-italic">Click on a user's profile picture to view that user's reviews.</p>
 <table class="table">
     <thead>
         <th>Profile Picture</th>
@@ -21,13 +22,12 @@
     <tbody>
         {{#each users}}
         <tr>
-            <td><img src="{{userPicture}}" class="book-cover-pic"/></td>
+            <td><a href="/users/{{userID}}"><img src="{{userPicture}}" class="book-cover-pic"/></a></td>
             <td>{{userID}}</td>
             <td>{{username}}</td>
             <td>{{userFirstName}}</td>
             <td>{{userLastName}}</td>
-            <td>{{userCreationDate}}</td>
-            <td><a href="/users/{{userID}}">View Info</a></td>
+            <td>{{formatDate userCreationDate}}</td>
         </tr>
         {{/each}}
     </tbody>

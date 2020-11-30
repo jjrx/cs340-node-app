@@ -1,0 +1,17 @@
+<form id="register" action="/register" method="post">
+	<h3>Create an account</h3>
+	<div class="form-group">
+		Username: <input type="text" name="username" class="form-control" required>
+		First name: <input type="text" name="fname" class="form-control" required>
+		Last name: <input type="text" name="lname" class="form-control" required>
+		Password: <input type="password" name="password" class="form-control" required>
+		URL of Profile Picture: <input type="text" name="pic" class="form-control">
+		<span class="text-muted">We recommend using images from <a href="https://pixabay.com/" target="_blank">pixabay</a></span>
+	</div>
+
+	<input type="submit" value="Register" class="btn btn-primary"><br />
+</form>
+
+<div id="login-text">
+	<p>Already have an account? <a href="/login">Log in!</a></p>
+</div>

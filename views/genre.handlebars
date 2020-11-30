@@ -18,7 +18,7 @@
     <tbody>
         {{#each genreBooks}}
         <tr>
-            <td><img src="{{bookCover}}" class="book-cover-pic"/></td>
+            <td><a href="/books/{{bookID}}"><img src="{{bookCover}}" class="book-cover-pic"/></a></td>
             <td>{{bookTitle}}</td>
         </tr>
         {{/each}}
